@@ -1,4 +1,4 @@
-Conversion examples
+`mapping-template` prototype examples
 ===================
 
 RML CSV example
@@ -41,17 +41,17 @@ java -jar mapping-template.jar --csv example.csv -t template.vm -f turtle -o out
 
 which specifies the following parameters:
 
---csv
+`--csv`
 :   The source CSV file.
 
--t
+`-t`
 : The template to use in the mapping process.
 
--f
+`-f`
 :   The format against which the output of the mapping process will be
     validated against.
 
--o
+`-o`
 :   The output file.
 
 The following RDF (Turtle) output file is produced:
@@ -120,17 +120,17 @@ java -jar mapping-template.jar --xml example.xml -t template.vm -f turtle -o out
 
 which specifies the following parameters:
 
---xml
+`--xml`
 :   The source XML file.
 
--t
+`-t`
 :   The template to use in the mapping process.
 
--f
+`-f`
 :   The format against which the output of the mapping process will be
     validated against.
 
--o
+`-o`
 :   The output file.
 
 The following RDF (Turtle) output file is produced:
@@ -202,17 +202,17 @@ java -jar mapping-template.jar --json example.json -t template.vm -f turtle -o o
 
 which specifies the following parameters:
 
---json
+`--json`
 :   The source JSON file.
 
--t
+`-t`
 :   The template to use in the mapping process.
 
--f
+`-f`
 :   The format against which the output of the mapping process will be
     validated against.
 
--o
+`-o`
 :   The output file.
 
 The following RDF (Turtle) output file is produced:
@@ -262,30 +262,31 @@ can be converted to RDF with the following template:
 @prefix dbo: <http://dbpedia.org/ontology/> .
 @prefix schema: <http://schema.org/> .
 
-#set ($charReader = $functions.getCSVReaderFromFile("./join-example/people.csv"))
-#set ($episodeReader = $functions.getCSVReaderFromFile("./join-example/episodes.csv"))
+#set ($charReader = $functions.getCSVReaderFromFile("people.csv"))
+#set ($episodeReader = $functions.getCSVReaderFromFile("episodes.csv"))
 #set ($charDF = $charReader.getDataframe())
 #set ($episodeDF = $episodeReader.getDataframe())
 #set ($mEpisodeAppearences = $functions.getMap($episodeDF, "number"))
-
+##
 #foreach($ep in $episodeDF)
-ex:episode_$ep.number a schema:Episode ;
-    schema:title "$ep.title" .
+ex:episode_$ep.number a schema:Episode .
+ex:episode_$ep.number schema:title "$ep.title" .
+
 #end
 
 #foreach($char in $charDF)
-ex:$char.id a schema:Person ex:Characters ;
-    schema:givenName "$char.firstname" ex:Characters ;
-    schema:lastName "$char.lastname" ex:Characters .
-    e:debutEpisode "$char.debutEpisode"^^xsd:integer ex:Characters ;
-    dbo:hairColor "$char.hairColor.toUpperCase()"@en ex:Characters .
+    ex:$char.id a schema:Person ex:Characters .
+    ex:$char.id schema:givenName "$char.firstname" ex:Characters .
+    ex:$char.id schema:lastName "$char.lastname" ex:Characters .
+    ex:$char.id e:debutEpisode "$char.debutEpisode"^^xsd:integer ex:Characters .
+    ex:$char.id dbo:hairColor "$char.hairColor.toUpperCase()"@en ex:Characters .
 
-#set($tEpisode = $functions.getMapValue($mEpisodeAppearences, $char.debutEpisode))
-#if($tEpisode.number) 
-ex:$char.id e:appearsIn ex:episode_$tEpisode.number ex:Characters .
-    e:appearsIn ex:episode_$tEpisode.number ex:Episodes .
-#end
-ex:$char.id e:debutEpisode "$char.debutEpisode"^^xsd:integer ex:Episodes .
+    #set($tEpisode = $functions.getMapValue($mEpisodeAppearences, $char.debutEpisode))
+    #if($tEpisode.number) 
+        ex:$char.id e:appearsIn ex:episode_$tEpisode.number ex:Characters .
+        ex:$char.id e:appearsIn ex:episode_$tEpisode.number ex:Episodes .
+    #end
+    ex:$char.id e:debutEpisode "$char.debutEpisode"^^xsd:integer ex:Episodes .
 #end
 ```
 
@@ -328,10 +329,10 @@ ex:$char.id e:appearsIn ex:episode_$tEpisode.number ex:Episodes .
 #end
 ```
 
-The two keys involved in the join are "number" and "debutEpisode", respectively found in the episodes.csv and people.csv files. 
-Because we know that each character debuts in at most one episode we can use the support function "getMap(df, key)" to create a support data structure to optimize the join process. Were this assumption not to hold the "getListMap(df, key)" function can be used to access the multiple rows where the column value (key) is the same.
+The two keys involved in the join are `number` and `debutEpisode`, respectively found in the `episodes.csv` and `people.csv` files. 
+Because we know that each character debuts in at most one episode we can use the support function `getMap(df, key)` to create a support data structure to optimize the join process. Were this assumption not to hold the `getListMap(df, key)` function can be used to access the multiple rows where the column value (key) is the same.
 
-The join operation is completed by retrieving the episode appearance of a character by their debutEpisode key. An explicit null check is required to make sure that a value is present for the particular debutEpisode key.
+The join operation is completed by retrieving the episode appearance of a character by their `debutEpisode` key. An explicit `null` check is required to make sure that a value is present for the particular `debutEpisode` key.
 
 From the command line, using the following command
 
@@ -504,10 +505,10 @@ A column containing multiple values can be split into multiple columns
 by the `splitColumn(df, column, separatorRegex)` function.  The
 content of the column is split into *n* values for *n* new columns
 according to the number *n* of separatorRegex regex matches on the
-source column value. The new columns follow the "original column
-name""match number" naming convention.  In the example the "title"
-column which contains two values, is split into the "title1" and
-"title2" columns.
+source column value. The new columns follow the [original column
+name][match number] naming convention. In the example, the `title`
+column which contains two values, is split into the `title1` and
+`title2` columns.
 
 From the command line, using the following command
 
@@ -517,17 +518,17 @@ java -jar mapping-template.jar --csv example.csv -t template.vm -f n3 -o output.
 
 which specifies the following parameters:
 
---csv
+`--csv`
 :   The source CSV file.
 
--t
+`-t`
 :   The template to use in the mapping process.
 
--f
+`-f`
 :   The format against which the output of the mapping process will be
     validated against.
 
--o
+`-o`
 :   The output file.
 
 The following RDF output file is produced:
@@ -549,9 +550,9 @@ dc:title "La Sirena"@it.
 CSV to JSON example
 ----------
 The output format for the mapping process is not limited to RDF. On the contrary the templated based approach allows for potentially any output format.
-In this example we will look at converting data from the csv format to the json format.
+In this example we will look at converting data from the CSV format to the JSON format.
 
-The following csv file
+The following CSV file
 
 ``` {.csv}
 book_id,title
@@ -577,7 +578,7 @@ Can be converted to JSON with the following template
 }
 ```
 
-Note the usage of functions offered by [Apache Velocity](https://velocity.apache.org/engine/2.3/vtl-reference.html#foreach-loops-through-a-list-of-objects) to correctly handle the json array.
+Note the usage of functions offered by [Apache Velocity](https://velocity.apache.org/engine/2.3/vtl-reference.html#foreach-loops-through-a-list-of-objects) to correctly handle the JSON array.
 
 From the command line, using the following command
 
@@ -587,13 +588,13 @@ java -jar mapping-template.jar --csv example.csv -t template.vm -o output.json
 
 which specifies the following parameters:
 
---csv
+`--csv`
 :   The source CSV file.
 
--t
+`-t`
 :   The template to use in the mapping process.
 
--o
+`-o`
 :   The output file.
 
 The following JSON output file is produced:
