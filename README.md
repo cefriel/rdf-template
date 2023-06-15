@@ -1,4 +1,4 @@
-# mapping-template
+# rdf-template
 
 A template-based component exploiting [Apache Velocity](https://velocity.apache.org/) to define declarative mappings.
 
