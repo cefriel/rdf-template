@@ -1,3 +1,5 @@
+⚠️ **REPOSITORY ARCHIVED** Current implementation available in the repository https://github.com/cefriel/mapping-template
+
 # rdf-template
 
 A template-based component exploiting [Apache Velocity](https://velocity.apache.org/) to define declarative mappings.
